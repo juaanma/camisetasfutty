@@ -7,7 +7,7 @@ import { MSG_MEDIDA, useTienda } from './contexto.js';
 const suave = [0.2, 0.8, 0.2, 1];
 const TITULO = '¿No está la camiseta que tanto buscás?'.split(' ');
 
-export default function Hero() {
+export default function Hero({ sinLogo = false }) {
   const { items, wa } = useTienda();
   const n = items.filter(enStock).length;
 
@@ -19,11 +19,11 @@ export default function Hero() {
   return (
     <header className="top">
       <h1 className="sr">Camisetas Futty</h1>
-      <motion.div className="flota-w" style={{ y: logoY, opacity: logoO }}>
+      {!sinLogo && <motion.div className="flota-w" style={{ y: logoY, opacity: logoO }}>
         <div className="flota"><motion.img className="logo" src="/img/logo.png" alt="Camisetas Futty" width="1000" height="236"
           initial={{ opacity: 0, y: -40, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: 'spring', stiffness: 120, damping: 14 }} /></div>
-      </motion.div>
+      </motion.div>}
 
       <motion.section className="hero-ask" id="pedidos" aria-labelledby="pedh"
         initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.15, ease: suave }}>
