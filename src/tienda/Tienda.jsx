@@ -7,6 +7,7 @@ import { useAviso } from '../lib/ui.jsx';
 import { TiendaCtx } from './contexto.js';
 import Hero from './Hero.jsx';
 import Portada3D from './Portada3D.jsx';
+import PedidoMedida from './PedidoMedida.jsx';
 import Barra from './Barra.jsx';
 import Catalogo from './Catalogo.jsx';
 import Encargo from './Encargo.jsx';
@@ -90,7 +91,7 @@ export default function Tienda({ demo = false }) {
     <TiendaCtx.Provider value={{ ...ctx, toggleBag, vaciarBag: () => { setBag([]); avisar('Consulta vacía'); } }}>
       <Fondo />
       <Progreso />
-      {demo ? <><Portada3D /><Hero sinLogo /></> : <Hero />}
+      {demo ? <><Portada3D /><PedidoMedida /></> : <Hero />}
       <LayoutGroup>
         <Barra />
         <Catalogo />
