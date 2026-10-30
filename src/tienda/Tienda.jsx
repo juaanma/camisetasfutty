@@ -5,7 +5,6 @@ import { datos } from '../lib/datos.js';
 import { enStock, esEncargo, esVendida, ls, money, waLink } from '../lib/util.js';
 import { useAviso } from '../lib/ui.jsx';
 import { TiendaCtx } from './contexto.js';
-import Hero from './Hero.jsx';
 import Portada3D from './Portada3D.jsx';
 import PedidoMedida from './PedidoMedida.jsx';
 import Barra from './Barra.jsx';
@@ -16,7 +15,7 @@ import Consulta from './Consulta.jsx';
 import VistaGrande from './VistaGrande.jsx';
 import { Fondo, Progreso, WaFlotante } from './Extras.jsx';
 
-export default function Tienda({ demo = false }) {
+export default function Tienda() {
   const [D, setD] = useState(null);
   const [error, setError] = useState(false);
   const [bag, setBag] = useState([]);
@@ -91,7 +90,8 @@ export default function Tienda({ demo = false }) {
     <TiendaCtx.Provider value={{ ...ctx, toggleBag, vaciarBag: () => { setBag([]); avisar('Consulta vacía'); } }}>
       <Fondo />
       <Progreso />
-      {demo ? <><Portada3D /><PedidoMedida /></> : <Hero />}
+      <Portada3D />
+      <PedidoMedida />
       <LayoutGroup>
         <Barra />
         <Catalogo />

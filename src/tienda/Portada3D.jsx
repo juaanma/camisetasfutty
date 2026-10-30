@@ -1,5 +1,5 @@
 /*
- * Portada demo: vitrina 3D con las camisetas del stock girando en anillo
+ * Portada: vitrina 3D con las camisetas del stock girando en anillo
  * y una ficha con los datos de la que está al frente.
  * Se arrastra para girarla; tocando la del frente se abre.
  */
