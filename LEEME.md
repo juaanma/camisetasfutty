@@ -2,28 +2,46 @@
 
 Tienda de camisetas con catálogo, consultas por WhatsApp y un **panel de admin** para que el dueño cargue y actualice las camisetas.
 
+Hecha con **React + Vite**, animaciones con **Motion** (Framer Motion) y datos en **Supabase**.
+
 ## Qué hay en la carpeta
 
 | Archivo | Para qué sirve |
 |---|---|
-| `index.html` | La tienda que ven los clientes |
-| `admin.html` | El panel del dueño (se entra con correo y contraseña) |
-| `css/estilos.css` | Diseño de la tienda (colores, letras, tarjetas) |
-| `css/admin.css` | Diseño del panel |
-| `js/config.js` | **Los dos datos de Supabase** (lo único que hay que tocar para publicar) |
-| `js/comun.js` | Funciones que usan la tienda y el panel |
-| `js/datos.js` | Guarda y lee el catálogo (en Supabase o en modo prueba) |
-| `js/tienda.js` | Lo que hace la tienda: filtros, búsqueda, consulta por WhatsApp |
-| `js/admin.js` | Lo que hace el panel: cargar, editar, borrar, ordenar |
-| `js/datos-prueba.js` | Catálogo de ejemplo para el modo prueba |
-| `img/` | Logo y fotos de las camisetas actuales |
+| `src/config.js` | **Los dos datos de Supabase** (si quedan vacíos, la web corre en modo prueba) |
+| `src/main.jsx` | Arranque: la tienda en `/` y el panel en `/admin` |
+| `src/tienda/` | La tienda: encabezado, buscador, catálogo, tarjetas, foto grande, consulta, pedidos a encargo, pie |
+| `src/admin/` | El panel del dueño y el formulario de camisetas |
+| `src/lib/` | Datos (Supabase o prueba), funciones compartidas, ventanas y avisos |
+| `src/styles/` | Diseño de la tienda y del panel |
+| `src/data/prueba.json` | Catálogo de ejemplo para el modo prueba |
+| `public/img/` | Logo y fotos de las camisetas |
 | `supabase/setup.sql` | Prepara la base de datos (se pega una sola vez) |
+| `_version-html/` | Copia de la versión anterior en HTML (por si hace falta volver) |
 
-## Probarla ya (modo prueba)
+## Trabajar en la web
 
-Abrí `index.html` con doble clic. Para el panel, abrí `admin.html` y entrá con cualquier correo y contraseña.
+Hace falta tener **Node.js** instalado. La primera vez, en esta carpeta:
 
-En modo prueba los cambios del panel quedan **solo en esa computadora**. Sirve para ver cómo funciona todo.
+```
+npm install
+```
+
+Para verla mientras la cambiás (se abre sola en el navegador y se actualiza al guardar):
+
+```
+npm run dev
+```
+
+El panel está en `http://localhost:5173/admin`.
+
+Para armar la versión que se sube a internet:
+
+```
+npm run build
+```
+
+Eso crea la carpeta `dist/`, que es la que se publica.
 
 ## Publicarla de verdad (una sola vez, ~15 minutos)
 
@@ -45,31 +63,31 @@ En Supabase andá a **Project Settings → API** (o **Data API**) y copiá:
 - **Project URL**
 - **anon public key**
 
-Pegalos en `js/config.js`:
+Pegalos en `src/config.js`:
 
 ```js
-window.FUTTY_CONFIG = {
-  supabaseUrl: 'https://xxxxx.supabase.co',
-  supabaseKey: 'eyJhbGciOi...'
-};
+export const SUPABASE_URL = 'https://xxxxx.supabase.co';
+export const SUPABASE_KEY = 'eyJhbGciOi...';
 ```
 
 La *anon key* puede estar en la web sin problema: solo sirve para leer el catálogo. Para editar hace falta entrar con la cuenta del dueño. **Nunca** pegues la *service_role key*.
 
 ### 3. Subir la web a internet gratis (Netlify)
 
-1. Entrá a <https://app.netlify.com/drop>.
-2. Arrastrá **toda la carpeta** `CAMISETAS FUTTY`.
+1. Corré `npm run build` en esta carpeta.
+2. Entrá a <https://app.netlify.com/drop> y arrastrá **la carpeta `dist`** (no toda la carpeta del proyecto).
 3. Te da una dirección tipo `https://camisetas-futty.netlify.app`. Desde *Site settings* podés cambiarle el nombre o conectar un dominio propio.
 
-Cada vez que cambies archivos (no el catálogo, sino el diseño o el código), volvé a arrastrar la carpeta.
+Cada vez que cambies el diseño o el código, repetí los pasos 1 y 2. El catálogo no hace falta: eso se cambia desde el panel.
+
+*Opción automática:* si subís el proyecto a GitHub y lo conectás en Netlify, se publica solo en cada cambio (el archivo `netlify.toml` ya tiene la configuración).
 
 ## Cómo usa el panel el dueño
 
-Entra a `https://su-pagina/admin.html` con su correo y contraseña. Desde ahí:
+Entra a `https://su-pagina/admin` con su correo y contraseña (la dirección vieja `admin.html` también funciona). Desde ahí:
 
-- **Camisetas**: agregar una nueva con foto, cambiar el estado (disponible, reservada, vendida) desde la lista, editar, duplicar, borrar y ordenar con las flechas.
+- **Camisetas**: agregar una nueva con foto, cambiar el estado (disponible, reservada, vendida o **a pedido**) desde la lista, editar, duplicar, borrar y ordenar con las flechas. Las «a pedido» no cuentan como stock: aparecen abajo de todo, en «Pedidos a encargo», dentro de la categoría de su sección.
 - **Secciones**: crear, renombrar, ordenar y borrar secciones (Retro, Lifestyle, etc.).
-- **Ajustes**: número de WhatsApp, Instagram, medios de pago, mostrar u ocultar precios y la sección «Ya vendidas».
+- **Ajustes**: número de WhatsApp, Instagram, medios de pago, mostrar u ocultar precios y mostrar u ocultar las vendidas (aparecen en el catálogo como «Sin stock»).
 
 Todo se guarda al instante y los clientes lo ven al recargar la página.

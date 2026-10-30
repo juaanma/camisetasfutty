@@ -6,22 +6,13 @@
   <title>Camisetas Futty</title>
   <meta name="description" content="Catálogo de Camisetas Futty: camisetas retro, lifestyle y actuales en stock. Consultas y pedidos a medida por WhatsApp.">
   <meta name="theme-color" content="#1c2230">
-  <link rel="icon" href="img/logo.png">
+  <link rel="icon" href="/img/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/estilos.css?v=6">
 </head>
 <body>
-  <div id="app"><p class="empty"><b>Cargando camisetas…</b></p></div>
-  <div id="ov" hidden></div>
-  <div id="toast" role="status" aria-live="polite"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/datos-prueba.js"></script>
-  <script src="js/comun.js?v=6"></script>
-  <script src="js/datos.js?v=6"></script>
-  <script src="js/tienda.js?v=6"></script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

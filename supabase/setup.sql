@@ -27,12 +27,19 @@ create table if not exists public.items (
   units      int  not null default 1,
   price      int,
   code       text not null default '',
-  status     text not null default 'disponible' check (status in ('disponible','reservada','vendida')),
+  status     text not null default 'disponible',
   is_new     boolean not null default false,
   img        text not null default '',
   position   double precision not null default 0,
   created_at timestamptz not null default now()
 );
+
+-- Fotos extra de cada camiseta (espalda y detalles) para la vista 3D
+alter table public.items add column if not exists imgs text[] not null default '{}';
+
+-- Estados permitidos ("encargo" = A pedido, se muestra en "Pedidos a encargo")
+alter table public.items drop constraint if exists items_status_check;
+alter table public.items add constraint items_status_check check (status in ('disponible','reservada','vendida','encargo'));
 
 -- Quiénes pueden editar (correos de los dueños)
 create table if not exists public.admins (
