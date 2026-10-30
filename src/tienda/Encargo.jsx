@@ -77,7 +77,7 @@ function Categoria({ nombre, k, its, activa, onClick }) {
       <span className="tin">
         <b>{nombre}</b>
         <small>{desc(nombre)}</small>
-        <em>{plural(its.length, 'modelo', 'modelos')}</em>
+        {its.length ? <em>{plural(its.length, 'modelo', 'modelos')}</em> : <em className="cero">Pedila por WhatsApp</em>}
       </span>
     </motion.button>
   );

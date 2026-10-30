@@ -367,3 +367,27 @@ body.has-bag .wa-flota{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .v3d-zoom-txt{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);white-space:nowrap;background:rgba(28,34,48,.85);color:var(--ink);padding:6px 12px;border-radius:99px;font:600 13px var(--f-cond);letter-spacing:.05em;pointer-events:none}
 .lb-nav{z-index:4}
 .flag.v3d-flag{background:var(--bg-3);color:var(--gold-2);border:1px solid rgba(213,178,99,.6)}
+
+/* ===== Pulido ===== */
+/* Pie: aire abajo para que el botón de WhatsApp no tape nada, y 3 columnas parejas */
+footer .wrap{padding-bottom:96px}
+@media (min-width:760px){footer .wrap{grid-template-columns:1.25fr 1fr 1fr;column-gap:48px}}
+/* Pedidos a encargo en el celular: tarjetas anchas, una debajo de la otra */
+@media (max-width:560px){
+  .etiles{grid-template-columns:1fr;gap:12px}
+  .etile{aspect-ratio:auto;height:130px}
+  .tin{align-items:flex-start;text-align:left;padding:14px 18px}
+  .tin b{font-size:22px}
+  .tin small{font-size:14px}
+  .tin em{font-size:13px}
+  .tbg::after{background:linear-gradient(90deg,rgba(20,24,36,.95) 25%,rgba(20,24,36,.35))}
+}
+.tin em.cero{color:var(--wa);font-weight:700}
+/* Barra del buscador más compacta en el celular */
+@media (max-width:560px){
+  .bar .wrap{gap:8px;padding-block:8px 6px}
+  .search{min-height:46px;padding-left:14px}
+  .search input{padding:10px 0;font-size:16px}
+  .chips{padding-block:4px}
+  .chip{padding:7px 12px;font-size:14px}
+}

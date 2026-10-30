@@ -103,7 +103,7 @@ function useTextoQueSeEscribe(input, nombres, valor) {
       const w = ej[i];
       if (!borrando) { c++; if (c > w.length + 14) borrando = true; }
       else { c -= 2; if (c <= 0) { c = 0; borrando = false; i = (i + 1) % ej.length; } }
-      setTxt('Buscá ' + w.slice(0, Math.min(c, w.length)) + (c <= w.length || c % 6 < 3 ? '|' : ''));
+      setTxt('Buscá ' + w.slice(0, Math.min(c, w.length)));
     }, 90);
     return () => clearInterval(t);
   }, [ej, input]);
