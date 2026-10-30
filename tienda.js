@@ -58,20 +58,21 @@
     app.innerHTML =
       '<header class="top">' +
         '<h1 class="sr">Camisetas Futty</h1><img class="logo" src="img/logo.png" alt="Camisetas Futty" width="1000" height="236">' +
-        '<div class="stock"><span class="live" aria-hidden="true"></span>En stock · <b>' + plural(av.length, 'camiseta', 'camisetas') + '</b></div>' +
-        '<span class="mini">¿No está la que buscás? <a href="#pedidos">Pedila a medida</a></span>' +
+        '<section class="hero-ask" id="pedidos" aria-labelledby="pedh">' +
+          '<p class="eyebrow">Pedidos a medida</p>' +
+          '<h2 id="pedh">¿No está la camiseta que tanto buscás?</h2>' +
+          '<p class="d">Pedí <b>CUALQUIER</b> camiseta: la que siempre estuviste buscando, de cualquier equipo o época. Personalizala como quieras y encargala en <b>cualquier talle</b>.</p>' +
+          '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + wa(MSG_CUSTOM) + '">Pedila por WhatsApp</a>' +
+          '<p class="hint">¡Mandanos la foto de la camiseta que querés!</p>' +
+        '</section>' +
+        '<a class="stock-big" href="#catalog"><span aria-hidden="true">•</span> Stock disponible <span aria-hidden="true">•</span></a>' +
+        '<p class="fast"><span class="live" aria-hidden="true"></span>Entrega inmediata · ' + plural(av.length, 'camiseta', 'camisetas') + '</p>' +
       '</header>' +
       '<div class="bar" role="search"><div class="wrap">' +
         '<label class="search"><span class="sr">Buscar camiseta</span>' + I.search + '<input id="q" type="search" placeholder="Buscá equipo, año o jugador" autocomplete="off"></label>' +
         '<div class="chips" id="chips"></div>' +
       '</div></div>' +
       '<main class="wrap" id="catalog" aria-live="polite"></main>' +
-      '<section class="wrap custom" id="pedidos"><div class="custom-in">' +
-        '<p class="eyebrow">Pedidos a medida</p><h2>¿No está la camiseta que buscás?</h2>' +
-        '<p class="d">Pedí <b>cualquier camiseta</b>, de cualquier equipo o época. La personalizamos como quieras y la encargamos en <b>tu talle</b>.</p>' +
-        '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + wa(MSG_CUSTOM) + '">' + I.wa + 'Pedila por WhatsApp</a>' +
-        '<p class="hint">Mandanos una foto de la camiseta que querés.</p>' +
-      '</div></section>' +
       footerHTML() +
       '<div id="bag" hidden></div>';
     var q = $('#q');
