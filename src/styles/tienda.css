@@ -486,3 +486,10 @@ footer .wrap{padding-bottom:96px}
   .medida-txt .d{margin-inline:auto}
   .medida-btn{width:100%}
 }
+
+/* ===== Firma del desarrollador ===== */
+.firma{grid-column:1/-1;justify-self:center;display:inline-flex;align-items:center;gap:6px;margin-top:-6px;padding:7px 14px;border:1px solid var(--line);border-radius:999px;color:var(--mute);font:600 12px var(--f-cond);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;transition:color .25s,border-color .25s,box-shadow .25s}
+.firma b{color:var(--gold);font-weight:700}
+.firma span{display:inline-block;transition:transform .25s}
+.firma:hover{color:var(--ink);border-color:var(--gold);box-shadow:0 0 18px rgba(213,178,99,.25)}
+.firma:hover span{transform:translate(2px,-2px)}

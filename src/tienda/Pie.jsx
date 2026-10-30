@@ -39,6 +39,9 @@ export default function Pie() {
           </div>
         </motion.div>
         <div className="legal"><span>© {new Date().getFullYear()} Camisetas Futty</span><span>Stock actualizado por el equipo de Futty</span></div>
+        <a className="firma" href="https://juxnma.vercel.app/" target="_blank" rel="noopener">
+          Developed by <b>juxnma</b><span aria-hidden="true">↗</span>
+        </a>
       </motion.div>
     </footer>
   );
