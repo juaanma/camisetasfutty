@@ -9,6 +9,8 @@
 
   function byId(id) { for (var i = 0; i < D.items.length; i++) if (D.items[i].id === id) return D.items[i]; return null; }
   function avail(it) { return it.status !== 'vendida'; }
+  /* Las vendidas siguen en el catálogo como "sin stock" (si el dueño lo deja activado) */
+  function listed(it) { return avail(it) || D.cfg.showSold; }
   function showP(it) { return D.cfg.showPrices && it.price; }
   function wa(t) { return u.waLink(D.cfg, t); }
 
@@ -32,6 +34,7 @@
     return it.name + ' ' + it.sub + ' · Talle ' + it.size + (it.code ? ' · Cód. #' + it.code : '') + (showP(it) ? ' · ' + money(it.price) : '');
   }
   function msgOne(it) {
+    if (it.status === 'vendida') return 'Hola! Vi que la camiseta ' + line(it) + ' está sin stock. ¿Me pueden conseguir una igual?';
     if (it.status === 'reservada') return 'Hola! Vi que la camiseta ' + line(it) + ' está reservada. Si se libera, ¿me avisan?';
     return 'Hola! Me interesa la camiseta ' + line(it) + '. ¿Sigue disponible?' + (showP(it) ? '' : ' ¿Qué precio tiene?');
   }
@@ -55,21 +58,22 @@
     app.innerHTML =
       '<header class="top">' +
         '<h1 class="sr">Camisetas Futty</h1><img class="logo" src="img/logo.png" alt="Camisetas Futty" width="1000" height="236">' +
-        '<div class="stock"><span class="live" aria-hidden="true"></span>En stock · <b>' + plural(av.length, 'camiseta', 'camisetas') + '</b></div>' +
-        '<span class="mini">¿No está la que buscás? <a href="#pedidos">Pedila a medida</a></span>' +
+        '<section class="hero-ask" id="pedidos" aria-labelledby="pedh">' +
+          '<p class="eyebrow">Pedidos a medida</p>' +
+          '<h2 id="pedh">¿No está la camiseta que tanto buscás?</h2>' +
+          '<p class="d">Pedí <b>CUALQUIER</b> camiseta: la que siempre estuviste buscando, de cualquier equipo o época. Personalizala como quieras y encargala en <b>cualquier talle</b>.</p>' +
+          '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + wa(MSG_CUSTOM) + '">Pedila por WhatsApp</a>' +
+          '<p class="hint">¡Mandanos la foto de la camiseta que querés!</p>' +
+        '</section>' +
+        '<a class="stock-big" href="#catalog"><span aria-hidden="true">•</span> Stock disponible <span aria-hidden="true">•</span></a>' +
+        '<p class="fast"><span class="live" aria-hidden="true"></span>Entrega inmediata · ' + plural(av.length, 'camiseta', 'camisetas') + '</p>' +
       '</header>' +
       '<div class="bar" role="search"><div class="wrap">' +
         '<label class="search"><span class="sr">Buscar camiseta</span>' + I.search + '<input id="q" type="search" placeholder="Buscá equipo, año o jugador" autocomplete="off"></label>' +
         '<div class="chips" id="chips"></div>' +
       '</div></div>' +
       '<main class="wrap" id="catalog" aria-live="polite"></main>' +
-      '<section class="wrap custom" id="pedidos"><div class="custom-in">' +
-        '<p class="eyebrow">Pedidos a medida</p><h2>¿No está la camiseta que buscás?</h2>' +
-        '<p class="d">Pedí <b>cualquier camiseta</b>, de cualquier equipo o época. La personalizamos como quieras y la encargamos en <b>tu talle</b>.</p>' +
-        '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + wa(MSG_CUSTOM) + '">' + I.wa + 'Pedila por WhatsApp</a>' +
-        '<p class="hint">Mandanos una foto de la camiseta que querés.</p>' +
-      '</div></section>' +
-      soldHTML() + footerHTML() +
+      footerHTML() +
       '<div id="bag" hidden></div>';
     var q = $('#q');
     q.value = S.q;
@@ -79,7 +83,7 @@
   }
 
   function chipsHTML() {
-    var av = D.items.filter(avail);
+    var av = D.items.filter(listed);
     var h = '<button class="chip" data-sec="all" aria-pressed="' + (S.sec === 'all') + '">Todo<small>' + av.length + '</small></button>';
     D.cfg.sections.forEach(function (s) {
       var n = av.filter(function (i) { return i.section === s; }).length;
@@ -111,7 +115,8 @@
     $('#chips').innerHTML = chipsHTML();
     var secs = S.sec === 'all' ? D.cfg.sections : [S.sec], h = '', vis = [], filtering = S.q || S.size || S.sec !== 'all';
     secs.forEach(function (s, si) {
-      var its = D.items.filter(function (i) { return i.section === s && avail(i) && match(i); });
+      var its = D.items.filter(function (i) { return i.section === s && listed(i) && match(i); });
+      its = its.filter(avail).concat(its.filter(function (i) { return !avail(i); })); // las sin stock, al final
       if (!its.length) return;
       its.forEach(function (i) { vis.push(i.id); });
       h += '<section class="sec" aria-labelledby="sh' + si + '"><div class="sec-h"><h2 id="sh' + si + '">' + esc(s) + '</h2><span class="cnt">' + plural(its.length, 'modelo', 'modelos') + '</span></div><div class="grid">' + its.map(card).join('') + '</div></section>';
@@ -127,16 +132,17 @@
   }
 
   function card(it) {
-    var res = it.status === 'reservada', on = inBag(it.id);
-    return '<article class="card' + (res ? ' is-res' : '') + '">' +
-      '<button class="ph" data-open="' + esc(it.id) + '" aria-label="Ver foto grande: ' + esc(it.name + ' ' + it.sub) + '"><img src="' + esc(it.img) + '" alt="" loading="lazy" decoding="async" width="720" height="720">' +
+    var res = it.status === 'reservada', sold = !avail(it), on = inBag(it.id);
+    return '<article class="card' + (res ? ' is-res' : '') + (sold ? ' is-sold' : '') + '">' +
+      '<button class="ph" data-open="' + esc(it.id) + '" aria-label="Ver foto grande: ' + esc(it.name + ' ' + it.sub) + (sold ? ' (sin stock)' : '') + '"><img src="' + esc(it.img) + '" alt="" loading="lazy" decoding="async" width="720" height="720">' +
         '<span class="tag-sz">' + esc(it.size) + '</span>' +
-        '<span class="flags">' + (res ? '<span class="flag res">Reservada</span>' : '') + (it.isNew && !res ? '<span class="flag new">Nuevo</span>' : '') + (it.units > 1 ? '<span class="flag units">' + it.units + ' unidades</span>' : '') + '</span>' +
+        (sold ? '<span class="stamp">Sin stock</span>' :
+          '<span class="flags">' + (res ? '<span class="flag res">Reservada</span>' : '') + (it.isNew && !res ? '<span class="flag new">Nuevo</span>' : '') + (it.units > 1 ? '<span class="flag units">' + it.units + ' unidades</span>' : '') + '</span>') +
       '</button>' +
       '<div class="bd"><h3>' + esc(it.name) + '</h3><p class="sub">' + esc(it.sub) + '</p>' +
-        '<div class="ft"><div class="price">' + (showP(it) ? '<span class="p">' + money(it.price) + '</span>' : '<span class="ask">Precio por WhatsApp</span>') + (it.code ? '<span class="code">#' + esc(it.code) + '</span>' : '') + '</div>' +
-        '<div class="act">' + (res ? '' : '<button class="btn btn-line btn-sm" data-bag="' + esc(it.id) + '" aria-pressed="' + on + '">' + (on ? '✓ Sumada' : '+ Sumar') + '</button>') +
-        '<a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="' + wa(msgOne(it)) + '">' + (res ? 'Avisame' : 'Consultar') + '</a></div></div>' +
+        '<div class="ft"><div class="price">' + (sold ? '<span class="ask out">Sin stock</span>' : showP(it) ? '<span class="p">' + money(it.price) + '</span>' : '<span class="ask">Precio por WhatsApp</span>') + (it.code ? '<span class="code">#' + esc(it.code) + '</span>' : '') + '</div>' +
+        '<div class="act">' + (res || sold ? '' : '<button class="btn btn-line btn-sm" data-bag="' + esc(it.id) + '" aria-pressed="' + on + '">' + (on ? '✓ Sumada' : '+ Sumar') + '</button>') +
+        '<a class="btn ' + (sold ? 'btn-line' : 'btn-wa') + ' btn-sm" target="_blank" rel="noopener" href="' + wa(msgOne(it)) + '">' + (sold ? 'Pedí una igual' : res ? 'Avisame' : 'Consultar') + '</a></div></div>' +
       '</div></article>';
   }
 
@@ -146,15 +152,6 @@
       b.setAttribute('aria-pressed', on);
       b.textContent = b.classList.contains('big') ? (on ? '✓ En tu consulta' : '+ Sumar a mi consulta') : (on ? '✓ Sumada' : '+ Sumar');
     });
-  }
-
-  function soldHTML() {
-    var s = D.items.filter(function (i) { return i.status === 'vendida'; });
-    if (!D.cfg.showSold || !s.length) return '';
-    return '<section class="wrap sold" aria-labelledby="soldh"><div class="sec-h"><h2 id="soldh">Ya vendidas</h2><span class="cnt">' + s.length + '</span></div>' +
-      '<p class="sold-note">Estas ya encontraron dueño. Si te gustó alguna, escribinos y vemos si conseguimos otra.</p><div class="sold-grid">' +
-      s.map(function (i) { return '<div class="sold-it"><img src="' + esc(i.img) + '" alt="' + esc(i.name + ' ' + i.sub) + ' (vendida)" loading="lazy"><span>Vendida</span><p>' + esc(i.name) + '</p></div>'; }).join('') +
-      '</div></section>';
   }
 
   function footerHTML() {
@@ -189,16 +186,17 @@
     var it = byId(id);
     if (!it) return;
     S.cur = id;
-    var idx = S.visible.indexOf(id), n = S.visible.length, res = it.status === 'reservada', on = inBag(id);
+    var idx = S.visible.indexOf(id), n = S.visible.length, res = it.status === 'reservada', sold = !avail(it), on = inBag(id);
     var nav = idx > -1 && n > 1 ? '<button class="lb-nav prev" data-nav="-1" aria-label="Anterior">' + I.l + '</button><button class="lb-nav next" data-nav="1" aria-label="Siguiente">' + I.r + '</button>' : '';
     u.abrirModal('<button class="x" data-act="close" aria-label="Cerrar">' + I.x + '</button>' +
       '<div class="lb-ph" id="lbph"><img src="' + esc(it.img) + '" alt="' + esc(it.name + ' ' + it.sub) + '">' + nav + '</div>' +
       '<div class="lb-info"><p class="eyebrow">' + esc(it.section) + (idx > -1 && n > 1 ? ' · ' + (idx + 1) + ' de ' + n : '') + '</p><h3 id="lbt">' + esc(it.name) + '</h3><p class="sub">' + esc(it.sub) + '</p>' +
-      '<dl class="facts"><dt>Talle</dt><dd>' + esc(it.size) + '</dd>' + (it.units > 1 ? '<dt>Unidades</dt><dd>' + it.units + '</dd>' : '') + (it.code ? '<dt>Código</dt><dd>#' + esc(it.code) + '</dd>' : '') + '<dt>Estado</dt><dd>' + (res ? 'Reservada' : 'Disponible') + '</dd></dl>' +
-      (showP(it) ? '<span class="p">' + money(it.price) + '</span>' : '<p class="note">Consultá el precio por WhatsApp.</p>') +
-      (D.cfg.pay ? '<p class="note">Pago: ' + esc(String(D.cfg.pay).toLowerCase()) + '. Se coordina por WhatsApp.</p>' : '') +
-      '<div class="act">' + (res ? '' : '<button class="btn btn-line big" data-bag="' + esc(it.id) + '" aria-pressed="' + on + '">' + (on ? '✓ En tu consulta' : '+ Sumar a mi consulta') + '</button>') +
-      '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + wa(msgOne(it)) + '">' + I.wa + (res ? 'Avisame si se libera' : 'Consultar por WhatsApp') + '</a></div></div>',
+      '<dl class="facts"><dt>Talle</dt><dd>' + esc(it.size) + '</dd>' + (it.units > 1 ? '<dt>Unidades</dt><dd>' + it.units + '</dd>' : '') + (it.code ? '<dt>Código</dt><dd>#' + esc(it.code) + '</dd>' : '') + '<dt>Estado</dt><dd>' + (sold ? 'Sin stock' : res ? 'Reservada' : 'Disponible') + '</dd></dl>' +
+      (sold ? '<p class="note">Esta ya se vendió. Escribinos y vemos si te conseguimos una igual.</p>' :
+        (showP(it) ? '<span class="p">' + money(it.price) + '</span>' : '<p class="note">Consultá el precio por WhatsApp.</p>') +
+        (D.cfg.pay ? '<p class="note">Pago: ' + esc(String(D.cfg.pay).toLowerCase()) + '. Se coordina por WhatsApp.</p>' : '')) +
+      '<div class="act">' + (res || sold ? '' : '<button class="btn btn-line big" data-bag="' + esc(it.id) + '" aria-pressed="' + on + '">' + (on ? '✓ En tu consulta' : '+ Sumar a mi consulta') + '</button>') +
+      '<a class="btn btn-wa" target="_blank" rel="noopener" href="' + wa(msgOne(it)) + '">' + I.wa + (sold ? 'Pedí una igual' : res ? 'Avisame si se libera' : 'Consultar por WhatsApp') + '</a></div></div>',
       'lb', {
         labelledby: 'lbt',
         onKey: function (e) { if (e.key === 'ArrowLeft') step(id, -1); else if (e.key === 'ArrowRight') step(id, 1); }

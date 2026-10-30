@@ -364,7 +364,7 @@
       '<label class="fld"><span>Instagram</span><input id="set-ig" value="' + esc(c.ig) + '" placeholder="https://www.instagram.com/camisetas_futty/"></label>' +
       '<label class="fld"><span>Medios de pago</span><input id="set-pay" value="' + esc(c.pay) + '" placeholder="Efectivo o transferencia"><small>Separalos con comas o con «o». Ej.: Efectivo, transferencia o Mercado Pago</small></label>' +
       '<label class="chk"><input type="checkbox" id="set-prices"' + (c.showPrices ? ' checked' : '') + '> Mostrar precios en la tienda</label>' +
-      '<label class="chk"><input type="checkbox" id="set-sold"' + (c.showSold ? ' checked' : '') + '> Mostrar la sección «Ya vendidas»</label>' +
+      '<label class="chk"><input type="checkbox" id="set-sold"' + (c.showSold ? ' checked' : '') + '> Mostrar las vendidas en el catálogo como «Sin stock»</label>' +
       (db.modo === 'prueba' ? '<div><button class="btn btn-line btn-sm" data-act="reset">Volver al ejemplo</button><small class="note" style="display:block;margin-top:6px">Borra los cambios de prueba de este navegador y vuelve al catálogo original.</small></div>' : '') +
       '</div>';
   }
