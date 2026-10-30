@@ -1,14 +1,14 @@
 /*
  * Portada demo: vitrina 3D con las camisetas del stock girando en anillo
- * y un cartel de aeropuerto que muestra la que está al frente.
+ * y una ficha con los datos de la que está al frente.
  * Se arrastra para girarla; tocando la del frente se abre.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { enStock, foto, money } from '../lib/util.js';
+import { enStock, foto } from '../lib/util.js';
 import { IcoWa } from '../lib/iconos.jsx';
 import { useTienda } from './contexto.js';
-import Tablero from './Tablero.jsx';
+import Ficha from './Ficha.jsx';
 
 const medir = (n) => {
   const card = window.innerWidth < 600 ? 128 : 188;
@@ -126,7 +126,7 @@ export default function Portada3D() {
       </motion.div>
 
       <motion.div className="p-info" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.7 }}>
-        <Tablero lineas={[it.name, String(it.sub || it.section).split('·')[0], (showP(it) ? money(it.price) : 'CONSULTAR') + '  ' + String(it.size).replace(/\s/g, '')]} />
+        <Ficha it={it} showP={showP} />
         <div className="p-acc">
           <motion.button className="btn btn-gold" onClick={() => abrir(it.id, ids, false)} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}>Ver camiseta</motion.button>
           <motion.a className="btn btn-wa" href={wa(msgUna(it))} target="_blank" rel="noopener" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}><IcoWa />Consultar</motion.a>
